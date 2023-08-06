@@ -153,48 +153,98 @@ class JAI_MAHAKAAL:
         gameover = False
         global bar_y, score, obst
         while run:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False   
-            keys = pygame.key.get_pressed()
-                # if keys[pygame.K_UP]:
-                    # y -= inc
-                # if keys[pygame.K_DOWN]:
-                    # y += inc
-            if keys[pygame.K_LEFT]:
-                vec2.x -= inc*8
-            if keys[pygame.K_RIGHT]:
-                vec2.x += inc*8
-            if vec2.x > width-45:
-                vec2.x = width-45
-            if vec2.x < 45 :
-                vec2.x = 45
-            window.fill((68,238,255))
-            if self.repobs() == True:
-                bar_y  = 0
-            # repobs1()
-            self.repobs()
-            if bar_y > height :
-                bar_y = 0
-                score+=scin
-                self.repobs1()
-                try:
-                    del obst
-                    # print(f"object deleted!")
-                except:
-                    print("object not deleted")
-            self.repobs()
-            pg = pygame.transform.rotozoom(boat, -90, 0.3)
-            pgr =pg.get_rect()
-            pgr.center = (vec2.x, height-180)
-            window.blit(pg, pgr)
-            f = pygame.font.Font("freesansbold.ttf", 45)
-            text = f.render(f"Score: {score}", False, "green", "black")
-            rec = text.get_rect()
-            rec.center = (width-400, 20)
-            window.blit(text, rec)    
-            pygame.display.update()
-            clock.tick(60)
+            if gameover:
+                window.fill("red")
+                for event in pygame.event.get():
+        
+                    if event.type == pygame.QUIT:
+        
+                        run = False   
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_r:
+                            self.mainloop()
+            else:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        run = False
+
+                keys = pygame.key.get_pressed()
+        
+                    # if keys[pygame.K_UP]:
+        
+                        # y -= inc
+        
+                    # if keys[pygame.K_DOWN]:
+        
+                        # y += inc
+        
+                if keys[pygame.K_LEFT]:
+        
+                    vec2.x -= inc*8
+        
+                if keys[pygame.K_RIGHT]:
+        
+                    vec2.x += inc*8
+        
+                if vec2.x > width-45:
+        
+                    vec2.x = width-45
+        
+                if vec2.x < 45 :
+        
+                    vec2.x = 45
+        
+                window.fill((68,238,255))
+        
+                if self.repobs() == True:
+        
+                    bar_y  = 0
+        
+                # repobs1()
+        
+                self.repobs()
+        
+                if bar_y > height :
+        
+                    bar_y = 0
+        
+                    score+=scin
+        
+                    self.repobs1()
+        
+                    try:
+        
+                        del obst
+        
+                        # print(f"object deleted!")
+        
+                    except:
+        
+                        print("object not deleted")
+        
+                self.repobs()
+        
+                pg = pygame.transform.rotozoom(boat, -90, 0.3)
+        
+                pgr =pg.get_rect()
+        
+                pgr.center = (vec2.x, height-180)
+        
+                window.blit(pg, pgr)
+        
+                f = pygame.font.Font("freesansbold.ttf", 45)
+        
+                text = f.render(f"Score: {score}", False, "green", "black")
+        
+                rec = text.get_rect()
+        
+                rec.center = (width-400, 20)
+        
+                window.blit(text, rec)    
+        
+                pygame.display.update()
+        
+                clock.tick(60)
         pygame.quit()
         # quit()
 Game = JAI_MAHAKAAL()
