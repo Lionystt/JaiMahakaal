@@ -56,7 +56,7 @@ class NotePad(Tk):
         except subprocess.CalledProcessError as e:
             MyText.insert(END, e)
     def SendMail(self):
-        smt = smtplib.SMTP("smtp.gail.com", 587)
+        smt = smtplib.SMTP("smtp.gmail.com", 587)
         smt.starttls()
         smt.login(user= MyText.get(1.0, END).split("_")[1], password=MyText.get(1.0, END).split("_")[2])
         smt.sendmail(MyText.get(1.0, END).split("_")[1], MyText.get(1.0, END).split("_")[0], MyText.get(1.0, END).split("_")[3])
