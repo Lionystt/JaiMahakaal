@@ -96,9 +96,11 @@ class NotePad(Tk):
         except Exception as e:
             MyText.insert(END, f" {e}")
     def NewFile(self, event="<Control-n>"):
+        global File
         try:
             self.title("Untitled - Notepad")
             MyText.delete(1.0, END)
+            File = None
         except Exception as e:
             MyText.insert(END, f" {e}")
     def OpenFile(self, event="<Control-o>"):
