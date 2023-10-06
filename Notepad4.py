@@ -8,7 +8,7 @@ import subprocess
 import smtplib
 from threading import Thread
 from tkinter import Toplevel, Listbox, IntVar, BooleanVar, Menu, Text, Label, Scrollbar, END, StringVar, VERTICAL, Entry, Button, Frame
-from tkinter import font, PhotoImage, messagebox, INSERT, X, CHAR, colorchooser
+from tkinter import font, PhotoImage, messagebox, INSERT, X, CHAR, colorchooser, SEL
 from tkinter.ttk import Combobox
 import re
 from functools import reduce
@@ -102,7 +102,8 @@ class NotePad(Tk):
             MyText.delete(1.0, END)
             File = None
         except Exception as e:
-            MyText.insert(END, f" {e}")
+            # MyText.insert(END, f" {e}")
+            pass
     def OpenFile(self, event="<Control-o>"):
         global File, MyText
         try:
@@ -113,7 +114,8 @@ class NotePad(Tk):
             f.close()
             self.title(f"{File}   -   Notepad")
         except Exception as e:
-            MyText.insert(END, f" {e}")
+            # MyText.insert(END, f" {e}")
+            pass
     def SaveFile(self, event="<Control-s"):
         global File, MyText
         try:
@@ -127,7 +129,8 @@ class NotePad(Tk):
                 with open(File, "w") as f:
                     f.write(MyText.get(1.0, END))
         except Exception as e:
-            MyText.insert(END, f" {e}")
+            # MyText.insert(END, f" {e}")
+            pass
     def Index(self, e = "<KeyPress>"):
         # print(MyText.index(END))  
         pass  
@@ -282,25 +285,18 @@ class NotePad(Tk):
     def Finds(self):
         try:
             search_term = input.get()
-
-            # Get the content from the text widget
-            text = MyText.get("1.0", END)
-            # print(MyText.search(search_term, 1.0, END))
-
-            # Use regular expression to find all occurrences of the search term
-            matches = re.finditer(search_term, text)
-
-            # Highlight the found text
-            MyText.tag_remove("highlight", "1.0", END)
-            for match in matches:
-                start, end = match.start(), match.end()
-                MyText.tag_add("highlight", f"1.0+{start}c", f"1.0+{end}c")
-                if not match in matches:
-                    messagebox.showinfo("Can't Find...", f'Cannot find "{search_term}"')
-                else:
-                    MyText.tag_config("highlight", background="blue")
+            start_position = "1.0"
+            found_position = MyText.search(search_term, start_position, stopindex=END)
+            
+            while found_position:
+                end_position = f"{found_position}+{len(search_term)}c"
+                MyText.tag_add(SEL, found_position, end_position)
+                start_position = end_position
+                found_position = MyText.search(search_term, start_position, stopindex=END)
+            findwin.destroy()
         except Exception as e:
             MyText.insert(END, f" {e}")
+            # print(e)
     def FontBox(self):
         global fontfamily, fb, fontstyle, fontsize, fontframe1, fontframe2, fontframe3
         try:
@@ -374,7 +370,7 @@ class NotePad(Tk):
         try:
             got = Toplevel(self)
             got.title("Go To...")
-            gofra = Frame(got, width=100, height=100, bg=c)
+            gofra = Frame(got, width=100, height=100)
             gofra.grid(row=0, column=0)
             golab = Label(gofra, text="Go to line no. : ", bg="black", fg="cyan")
             golab.grid(row=0, column=0, padx=20,pady=20)
@@ -383,7 +379,8 @@ class NotePad(Tk):
             but = Button(gofra, text="Go", command=self.GoToFeature, bg="black", fg="cyan")
             but.grid(row=2, column=0, padx=20, pady=20)
         except Exception as e:
-            MyText.insert(END, f" {e}")
+            # MyText.insert(END, f" {e}")
+            print(e)
     def GoToFeature(self):
         try:
             ent = entr.get()
@@ -392,8 +389,10 @@ class NotePad(Tk):
                 MyText.tag_add("sel", ent_str, ent_str + "+1l")
                 MyText.mark_set(INSERT, ent_str)
                 MyText.see(INSERT)
+                got.destroy()
         except Exception as e:
             MyText.insert(END, f" {e}")
+            # print(e)
     # def Zoom(self):
         # MyText.bind("Control-u>", self.ZoomOut)
     def ZoomOut(self, event="<Control-p>"):
@@ -466,7 +465,7 @@ class NotePad(Tk):
             SpeakMenu = Menu(MainMenu,tearoff=0, bg="black", fg="cyan", font="cursive 18 italic bold")       
             SpeakMenu.add_command(label="Speak", command=self.createspeak)
             # SpeakMenu.add_command(label="Stop Speaking", command=self.Stop)
-            SpeakMenu.add_command(label="Save As Audio File", command=self.SaveAudioFileNameDialog)
+            # SpeakMenu.add_command(label="Save As Audio File", command=self.SaveAudioFileNameDialog)
             ViewMenu = Menu(MainMenu, tearoff=0, bg="black", fg="cyan", font="cursive 18 italic bold")
             ViewMenu.add_command(label="Zoom In",command=self.ZoomIn)
             ViewMenu.entryconfigure("Zoom In", accelerator="Ctrl+P")
@@ -474,7 +473,7 @@ class NotePad(Tk):
             ViewMenu.entryconfigure("Zoom Out", accelerator="Ctrl+M")
             # ViewMenu.add_cascade(label="Zoom", menu=ZoomMenu, background="black",foreground="cyan")
             # ViewMenu.add_checkbutton(label="Status Bar", onvalue=1, offvalue=0, variable=bo)
-            HelpMenu = Menu(MainMenu, tearoff=0)
+            HelpMenu = Menu(MainMenu, tearoff=0, bg="black", fg="cyan", font="cursive 18 italic bold")
             HelpMenu.add_command(label="Help",command=self.Help, background="black", foreground="cyan", font="cursive 18 bold italic")
             MainMenu.add_cascade(label="File", menu=FileMenu, background="black", foreground="cyan", font="cursive 18 bold italic")
             MainMenu.add_cascade(label="Edit", menu=EditMenu, background="black", foreground="cyan", font="cursive 18 bold italic")
@@ -543,6 +542,7 @@ class NotePad(Tk):
                  b["foreground"] = d[1]
             MyText["insertbackground"] = d[1]
             ViewMenu["fg"] = d[1]
+            HelpMenu["fg"] = d[1]
             list4 = [MyText, scroll, Scroll, statfra]
             for e in list4:
                 e["fg"] = d[1]
